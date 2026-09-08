@@ -1,0 +1,14 @@
+node_modules/
+dist/
+dist-electron/
+release/
+artifacts/
+.ajo-space/
+.env
+.env.*
+!.env.example
+*.log
+*.pem
+*.key
+*.p12
+.DS_Store

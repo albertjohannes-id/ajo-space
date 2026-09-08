@@ -1,0 +1,68 @@
+{
+  "name": "ajo-space",
+  "version": "0.1.0",
+  "description": "A local-first desktop library to discover, run, and monitor your repositories at a glance.",
+  "author": "Ajo Space contributors",
+  "private": true,
+  "type": "module",
+  "main": "dist-electron/main.js",
+  "scripts": {
+    "dev": "npm run build && electron .",
+    "build": "tsc -p tsconfig.electron.json && tsc --noEmit && vite build",
+    "test": "tsx --test tests/*.test.ts",
+    "package": "npm run build && electron-builder --mac --dir",
+    "test:desktop": "npm run build && node tests/desktop.mjs",
+    "format": "prettier --write electron src tests *.json vite.config.ts index.html README.md",
+    "test:previews": "npm run build && electron tests/previews.mjs"
+  },
+  "dependencies": {
+    "lucide-react": "^0.468.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "simple-icons": "^16.30.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.63.0",
+    "@types/jsdom": "^30.0.0",
+    "@types/node": "^24.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "6.1.1",
+    "electron": "44.2.0",
+    "electron-builder": "26.15.3",
+    "jsdom": "^30.0.1",
+    "prettier": "^3.9.6",
+    "tsx": "4.23.13",
+    "typescript": "^5.9.0",
+    "vite": "8.2.2"
+  },
+  "build": {
+    "appId": "space.ajo.desktop",
+    "productName": "Ajo Space",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "dist-electron/**/*",
+      "package.json"
+    ],
+    "mac": {
+      "category": "public.app-category.developer-tools",
+      "identity": null,
+      "target": "dir"
+    }
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/albertjohannes-id/ajo-space.git"
+  },
+  "bugs": {
+    "url": "https://github.com/albertjohannes-id/ajo-space/issues"
+  },
+  "homepage": "https://github.com/albertjohannes-id/ajo-space#readme",
+  "engines": {
+    "node": ">=22.12.0"
+  }
+}
