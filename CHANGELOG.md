@@ -4,6 +4,9 @@
 
 ### Latest updates
 
+- Added a scrollable local README Markdown panel with app-first/repository fallback and refresh controls.
+- Bounded Git history and expanded commit messages to keep app details proportional.
+
 - Added first-launch workspace naming (32 Unicode characters), customizable emoji/initials badge and Settings rename controls.
 - Replaced personal branding with neutral Ajo Space / AJ defaults.
 - Prepared public documentation, synthetic screenshots, privacy exclusions and an optional macOS CI template.

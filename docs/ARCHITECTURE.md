@@ -51,3 +51,9 @@ Multiple explicit `--run <id-or-path>` arguments can restore several managed dev
 `electron/profile.ts` provides shared validation: a trimmed name up to 32 Unicode grapheme clusters and an optional badge up to two graphemes. Blank names become Ajo Space. The default badge is AJ; custom names get automatic initials unless a badge is supplied. Controls and multiline characters are rejected. The main process validates profile writes independently of the renderer.
 
 A fresh profile starts with `onboardingComplete: false`. First launch prompts for the workspace identity and offers Use Ajo Space. Saving persists `spaceName`, `avatar` and completion in application data; Settings uses the same validation. The dialog keeps focus inside and makes the background inert. No OS username or account email is used to derive identity. Existing installations without a profile are prompted once. Product bundle/window identity remains Ajo Space; the workspace name appears in its sidebar and footer.
+
+## README viewer and detail layout
+
+The `readme` IPC action accepts only a known app ID. `electron/readme.ts` looks for a case-insensitive README.md at the app path, then the Git root; it does not recursively search or accept an arbitrary renderer-supplied filepath. Reads use a bounded 256 KiB buffer, preserve UTF-8 boundaries, and reject symlinks outside the selected project directory. Absence, empty content, errors and truncation have distinct UI states.
+
+`src/ReadmePanel.tsx` renders Markdown with GFM tables but no raw HTML, executable content, active links or loaded images. Refresh and app changes cancel stale responses. README and Git-history bodies are separate keyboard-focusable scroll regions; maximum heights are 420 px and 480 px. Expanded commit message bodies have a 220 px bound. Region headers remain outside the scroll areas.

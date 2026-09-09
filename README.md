@@ -125,6 +125,12 @@ npm run package       # Unsigned macOS application
 - [Changelog](CHANGELOG.md)
 - [Security and privacy](SECURITY.md)
 
+## Proportional app details
+
+The detail page includes a **README** panel when `README.md` is available (case-insensitive). It prefers the app's own file, falling back to its Git repository root. **Refresh README** reloads edits. Markdown headings, lists, code and tables render locally; raw HTML is omitted, links are shown as text, and images display their alt text without network requests.
+
+README content scrolls within a 420 px maximum height. Git history scrolls within 480 px, and expanded commit messages within 220 px, so long documentation and histories do not keep stretching the page. Scroll regions support keyboard focus. README reads are limited to 256 KiB with a visible truncation notice; use your editor for larger files.
+
 ## License and credits
 
 Code is available under the [MIT license](LICENSE). Framework marks are supplied by [Simple Icons](https://github.com/simple-icons/simple-icons); interface icons use [Lucide](https://lucide.dev/). Brand marks belong to their respective owners. Ajo Space is not affiliated with the frameworks or applications it displays.

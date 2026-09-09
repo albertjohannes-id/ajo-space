@@ -1018,3 +1018,97 @@ code {
 .space-profile .muted {
   margin-top: 8px;
 }
+.detail-columns > div {
+  min-width: 0;
+}
+.detail-scroll {
+  max-height: 420px;
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  padding-right: 10px;
+  scrollbar-width: thin;
+  scrollbar-color: #576450 transparent;
+}
+.detail-scroll:focus-visible {
+  outline: 2px solid #cdea9a;
+  outline-offset: 4px;
+}
+.history-scroll {
+  max-height: 480px;
+}
+.markdown-body {
+  font-size: 12px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+.markdown-body h1 {
+  font-size: 23px;
+  letter-spacing: -0.5px;
+  margin: 16px 0 10px;
+}
+.markdown-body h2 {
+  font-size: 18px;
+  margin: 18px 0 10px;
+}
+.markdown-body h3 {
+  font-size: 15px;
+  display: block;
+  margin: 16px 0 8px;
+}
+.markdown-body p {
+  font-size: 12px;
+}
+.markdown-body ul,
+.markdown-body ol {
+  padding-left: 23px;
+}
+.markdown-body pre {
+  overflow: auto;
+  padding: 12px;
+  background: #0003;
+  border-radius: 7px;
+  white-space: pre;
+  max-width: 100%;
+}
+.markdown-body code {
+  font-size: 11px;
+}
+.markdown-body table {
+  display: block;
+  max-width: 100%;
+  overflow: auto;
+  border-collapse: collapse;
+}
+.markdown-body th,
+.markdown-body td {
+  padding: 7px 10px;
+  border: 1px solid var(--border);
+  text-align: left;
+}
+.markdown-body blockquote {
+  border-left: 3px solid #71805b;
+  margin: 14px 0;
+  padding-left: 14px;
+  color: var(--muted);
+}
+.markdown-body hr {
+  border: 0;
+  border-top: 1px solid var(--border);
+}
+.readme-link {
+  color: #cdea9a;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+}
+.readme-location {
+  margin-bottom: 14px;
+}
+.history-scroll .commit-details pre {
+  max-height: 220px;
+  overflow: auto;
+}
+.history-scroll .git-activity p.wrap {
+  max-height: 65px;
+  overflow: auto;
+}

@@ -31,3 +31,5 @@ Git history tests create a temporary bare local remote, push only to that fixtur
 - Preview missing: verify the local URL responds and does not require a browser login. Inspect the preview error in details and use Refresh preview.
 - Changed seems stale: use Rescan; background refresh is roughly every 30 seconds. Changed means uncommitted files, not latest commits. Deletion recency is approximate.
 - Installed app seems stale: confirm the rebuilt bundle was copied to `~/Applications/Ajo Space.app`; `npm run build` alone only updates source build output.
+
+README tests cover app-first selection, case-insensitive filenames, repository fallback, missing/empty content, bounded UTF-8 reads, escaping symlinks and inert Markdown rendering. For layout acceptance, use a long README and expand a long commit message: each body should scroll independently, with no horizontal page overflow.

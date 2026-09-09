@@ -16,12 +16,14 @@ A personal, local-only macOS app built with Electron, React, and TypeScript. Rea
 
 - `electron/profile.ts`: shared Unicode-aware workspace-name and avatar validation. Never hardcode personal names, emails or home-directory paths in distributable files.
 - `electron/core.ts`: evidence-based discovery, Python virtualenv and FastAPI detection, Git metadata and changed-file timestamps.
+- `electron/readme.ts`: bounded local README discovery; preserve path boundaries and keep README content inert.
 - `electron/git-history.ts`: on-demand commit pagination, cached upstream comparison and locally recorded push events. Never infer push time from commit dates.
 - `electron/runtime.ts`: process groups, bounded logs, TCP readiness, external listener ownership via macOS `lsof`.
 - `electron/previews.ts`: serialized sandboxed captures, retry/deduplication, repository storage and local cache.
 - `electron/main.ts`: window lifecycle, IPC actions, configuration/library persistence, background Git refresh, explicit `--run <id-or-path>`.
 - `electron/preload.cts`: renderer bridge. Its CommonJS extension is intentional for a sandboxed preload.
 - `src/main.tsx`, `src/style.css`: interface and presentation.
+- `src/ReadmePanel.tsx`: local Markdown rendering and bounded scrolling.
 - `src/GitHistory.tsx`: expandable history and refresh controls.
 - `src/library.ts`: Changed-view ordering. `src/FrameworkIcon.tsx`: bundled framework marks.
 

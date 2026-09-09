@@ -71,7 +71,12 @@ export function GitHistory({
       {error && <p className="amber">{error}</p>}
       {!data && loading && <p className="muted">Reading local Git history…</p>}
       {data && (
-        <>
+        <div
+          className="detail-scroll history-scroll"
+          role="region"
+          aria-label="Commit history content"
+          tabIndex={0}
+        >
           <div className="git-activity">
             <div>
               <div className="eyebrow">
@@ -166,7 +171,7 @@ export function GitHistory({
             <Clock size={11} /> Local Git data only. No fetch or push is
             performed.
           </p>
-        </>
+        </div>
       )}
     </div>
   );

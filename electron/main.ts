@@ -12,6 +12,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { scan, exec, gitInfo, type Settings, type AppEntry } from "./core.js";
 import { validateProfile } from "./profile.js";
+import { readReadme } from "./readme.js";
 import { Runner } from "./runtime.js";
 import { gitHistory } from "./git-history.js";
 import { Previews, localURL, previewPath } from "./previews.js";
@@ -110,6 +111,8 @@ function register() {
           ),
         };
       }
+      case "readme":
+        return readReadme(selected());
       case "gitHistory":
         return gitHistory(selected().path, payload.offset || 0);
       case "scan":

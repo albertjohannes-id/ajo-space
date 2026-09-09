@@ -26,6 +26,7 @@ import {
 import "./style.css";
 import { SpaceProfile } from "./SpaceProfile";
 import { spaceBadge } from "../electron/profile";
+import { ReadmePanel } from "./ReadmePanel";
 import { GitHistory } from "./GitHistory";
 import { newestChangedFirst } from "./library";
 import { FrameworkIcon } from "./FrameworkIcon";
@@ -500,6 +501,7 @@ function App() {
                     </dd>
                   </dl>
                 </div>
+                <ReadmePanel key={a.id} id={a.id} />
                 <div className="panel">
                   <h3>Quick actions</h3>
                   <div className="quick-actions">
