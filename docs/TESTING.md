@@ -33,3 +33,5 @@ Git history tests create a temporary bare local remote, push only to that fixtur
 - Installed app seems stale: confirm the rebuilt bundle was copied to `~/Applications/Ajo Space.app`; `npm run build` alone only updates source build output.
 
 README tests cover app-first selection, case-insensitive filenames, repository fallback, missing/empty content, bounded UTF-8 reads, escaping symlinks and inert Markdown rendering. For layout acceptance, use a long README and expand a long commit message: each body should scroll independently, with no horizontal page overflow.
+
+Runtime regression tests cover unexpected ports, multiple instances, nested ownership, listener disappearance, and read-only external Stop behavior.

@@ -476,6 +476,31 @@ function App() {
                     <dd>{a.cwd}</dd>
                     <dt>Local URL</dt>
                     <dd>{r.url || a.url || "Not configured"}</dd>
+                    {r.instances?.length > 0 && (
+                      <>
+                        <dt>Detected listeners</dt>
+                        <dd>
+                          {r.instances.map((instance: any) => (
+                            <div key={`${instance.pid}:${instance.port}`}>
+                              <button
+                                onClick={() =>
+                                  window.ajo.call("open", {
+                                    id: a.id,
+                                    port: instance.port,
+                                  })
+                                }
+                              >
+                                {instance.url}
+                              </button>
+                              <span className="muted">
+                                {" "}
+                                · PID {instance.pid}
+                              </span>
+                            </div>
+                          ))}
+                        </dd>
+                      </>
+                    )}
                     {r.portConflict && (
                       <>
                         <dt>Port conflict</dt>

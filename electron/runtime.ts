@@ -12,44 +12,62 @@ export type Runtime = {
   command?: string;
   cwd?: string;
   portConflict?: string;
+  instances?: { port: number; pid: number; url: string }[];
 };
-async function listenerCwds(port: number): Promise<string[]> {
+export async function discoverListeners() {
   try {
-    const result = await exec(
+    const { stdout } = await exec(
       "/usr/sbin/lsof",
-      ["-nP", `-iTCP:${port}`, "-sTCP:LISTEN", "-Fp"],
-      { timeout: 2000 },
+      ["-nP", "-iTCP", "-sTCP:LISTEN", "-Fpn"],
+      { timeout: 3000 },
     );
-    const pids = [
-      ...new Set(
-        result.stdout
-          .split("\n")
-          .filter((l) => /^p\d+$/.test(l))
-          .map((l) => l.slice(1)),
-      ),
-    ];
-    const directories = await Promise.all(
-      pids.map(async (pid) => {
+    let pid = 0;
+    const listeners: { pid: number; port: number; cwd: string }[] = [];
+    for (const line of stdout.split("\n")) {
+      if (/^p\d+$/.test(line)) pid = Number(line.slice(1));
+      const match = line.startsWith("n") && line.match(/:(\d+)$/);
+      if (
+        pid &&
+        match &&
+        !listeners.some((l) => l.pid === pid && l.port === Number(match[1]))
+      )
+        listeners.push({ pid, port: Number(match[1]), cwd: "" });
+    }
+    const directories = new Map<number, string>();
+    await Promise.all(
+      [...new Set(listeners.map((l) => l.pid))].map(async (pid) => {
         try {
-          const cwd = await exec(
+          const result = await exec(
             "/usr/sbin/lsof",
-            ["-a", "-p", pid, "-d", "cwd", "-Fn"],
+            ["-a", "-p", String(pid), "-d", "cwd", "-Fn"],
             { timeout: 2000 },
           );
-          return (
-            cwd.stdout
-              .split("\n")
-              .find((l) => l.startsWith("n"))
-              ?.slice(1) || ""
-          );
-        } catch {
-          return "";
-        }
+          const cwd = result.stdout
+            .split("\n")
+            .find((l) => l.startsWith("n"))
+            ?.slice(1);
+          if (cwd)
+            directories.set(pid, await fs.realpath(cwd).catch(() => cwd));
+        } catch {}
       }),
     );
-    return directories.filter(Boolean);
+    return listeners
+      .map((l) => ({ ...l, cwd: directories.get(l.pid) || "" }))
+      .filter((l) => l.cwd);
   } catch {
     return [];
+  }
+}
+export function listenerURL(app: AppEntry, port: number) {
+  try {
+    const url = new URL(app.url);
+    if (!["localhost", "127.0.0.1", "0.0.0.0", "[::1]"].includes(url.hostname))
+      throw Error();
+    url.hostname = "localhost";
+    url.port = String(port);
+    return url.toString();
+  } catch {
+    return `http://localhost:${port}/`;
   }
 }
 // A listening default port is not proof that every app using it is running.
@@ -59,12 +77,10 @@ export async function identifyExternalOwner(
   directories: string[],
 ) {
   const candidates = await Promise.all(
-    apps
-      .filter((a) => a.port === port)
-      .map(async (a) => ({
-        a,
-        cwd: await fs.realpath(a.cwd).catch(() => a.cwd),
-      })),
+    apps.map(async (a) => ({
+      a,
+      cwd: await fs.realpath(a.cwd).catch(() => a.cwd),
+    })),
   );
   const matches = candidates.filter(({ cwd }) =>
     directories.some((dir) => within(dir, cwd)),
@@ -89,50 +105,75 @@ export const portActive = (port: number) =>
     s.on("timeout", () => done(false));
   });
 export class Runner {
+  constructor(private readonly listeners = discoverListeners) {}
   states = new Map<string, Runtime>();
   children = new Map<string, ChildProcess>();
   async refresh(apps: AppEntry[]) {
+    const listeners = await this.listeners();
     const ports = new Map<number, { active: boolean; owner?: string }>();
+    const instances = new Map<
+      string,
+      { port: number; pid: number; url: string }[]
+    >();
+    for (const listener of listeners) {
+      const owner = await identifyExternalOwner(apps, listener.port, [
+        listener.cwd,
+      ]);
+      if (owner) {
+        const app = apps.find((a) => a.id === owner)!;
+        const list = instances.get(owner) || [];
+        list.push({
+          port: listener.port,
+          pid: listener.pid,
+          url: listenerURL(app, listener.port),
+        });
+        instances.set(owner, list);
+      }
+      ports.set(listener.port, { active: true, owner });
+    }
     for (const app of apps) {
       const port = this.children.has(app.id)
         ? this.states.get(app.id)?.port || app.port
         : app.port;
-      if (!port || ports.has(port)) continue;
-      const active = await portActive(port);
-      const managed = apps.find(
-        (a) =>
-          this.children.has(a.id) &&
-          (this.states.get(a.id)?.port || a.port) === port,
-      );
-      const owner =
-        managed?.id ||
-        (active
-          ? await identifyExternalOwner(apps, port, await listenerCwds(port))
-          : undefined);
-      ports.set(port, { active, owner });
+      if (port && !ports.has(port))
+        ports.set(port, { active: await portActive(port) });
     }
     for (const app of apps) {
       let s = this.states.get(app.id);
       const port = this.children.has(app.id) ? s?.port || app.port : app.port;
       const { active = false, owner } = ports.get(port) || {};
+      const found = (instances.get(app.id) || []).sort(
+        (a, b) =>
+          Number(b.port === port) - Number(a.port === port) || a.port - b.port,
+      );
+      if (s) {
+        s.instances = found;
+        s.portConflict = undefined;
+      }
       if (this.children.has(app.id)) {
         if (s && active) s.status = "Ready";
         else if (s && s.port && s.status === "Ready") s.status = "Starting";
         else if (s && !s.port && s.started && Date.now() - s.started > 1500)
           s.status = "Ready";
-      } else if (active && owner === app.id) {
+      } else if (found.length) {
         s = {
           ...s,
           logs: s?.logs || "",
           status: "Running Externally",
-          url: app.url,
-          port: app.port,
+          url: found[0].url,
+          port: found[0].port,
+          pid: found[0].pid,
+          started: undefined,
+          instances: found,
+          portConflict: undefined,
         };
         this.states.set(app.id, s);
       } else {
         if (s?.status === "Running Externally") {
           s.status = "Stopped";
           s.pid = undefined;
+          s.url = undefined;
+          s.port = undefined;
         }
         if (!s) {
           s = { status: "Stopped", logs: "" };

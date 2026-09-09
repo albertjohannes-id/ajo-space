@@ -4,6 +4,8 @@
 
 ### Latest updates
 
+- Detect externally launched listeners across ports and list multiple instances per app, including Codex terminal servers.
+
 - Added a scrollable local README Markdown panel with app-first/repository fallback and refresh controls.
 - Bounded Git history and expanded commit messages to keep app details proportional.
 

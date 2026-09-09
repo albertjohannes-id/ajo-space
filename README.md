@@ -55,7 +55,7 @@ On Apple Silicon, open `release/mac-arm64/Ajo Space.app` or copy it into your Ap
 | Recursive discovery | Finds direct and nested runnable apps, preserving their parent context                             |
 | Framework logos     | Bundled offline marks for supported languages and frameworks                                       |
 | Run controls        | Run, Stop, Restart and Open; bounded live stdout/stderr logs                                       |
-| External apps       | Identifies Terminal-launched web apps when the configured port and process working directory match |
+| External apps       | Identifies Terminal-launched web apps by process working directory, including multiple or unexpected ports |
 | Git details         | Branch, dirty files, ahead/behind, effective Git identity and remote                               |
 | Commit history      | Expandable full messages, authors, dates, hashes and older-history pagination                      |
 | Visual previews     | Automatic capture when ready, with manual Refresh preview                                          |
@@ -81,7 +81,9 @@ Detection is a starting point, not a universal build-system parser. If a project
 - **Error:** the managed command failed; inspect its logs.
 - **Running Externally:** a matching listener was started outside Ajo Space. Open and previews work, but Stop and Restart stay unavailable.
 
-A busy port alone does not make every app using that port “running.” Ajo Space checks ownership. Unknown ports, ambiguous directories and Docker-hosted listeners may prevent external detection. TCP readiness is not a full application-health check.
+A busy port alone does not make every app using that port “running.” Ajo Space checks ownership. Ambiguous directories and Docker-hosted listeners may prevent external detection. TCP readiness is not a full application-health check.
+
+The detail page lists detected listener URLs and PIDs, including extra instances started in Terminal or Codex. Open each URL directly. One app with multiple listeners counts as one running app. External processes remain read-only; stop them in the terminal that launched them.
 
 ## Git: changes, commits and pushes
 

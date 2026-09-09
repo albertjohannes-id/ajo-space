@@ -14,9 +14,9 @@ Managed commands execute in a detached process group through the user's login sh
 
 Status refreshes approximately every 2.5 seconds. A known TCP port or a localhost URL emitted in logs supplies readiness. A process without a known port is considered ready after remaining alive; this is not an HTTP health check.
 
-For an externally launched service, `lsof` identifies the listener and its working directory. Matching is limited to apps configured for that port. The most specific matching working directory wins; equal/ambiguous candidates are not marked running. Managed ownership takes precedence, preventing one port from counting several apps. An unrelated listener creates a port conflict, not a running app.
+For an externally launched service, `lsof` identifies the listener and its working directory. All visible TCP listening ports are inspected, including ports different from the launch configuration. The most specific matching working directory wins; equal/ambiguous candidates are not marked running. Each listener is attributed independently; multiple listeners are grouped under one app, preserving app-based counts. An unrelated listener creates a port conflict, not a running app.
 
-External detection requires a known port and readable matching working directory. A command started from another directory, an unexpected port, containers, remote servers, and background programs without a listener may not be identified. External stdout/stderr, start time, Stop and Restart are unavailable. Configure the port/URL and use Open; manage that process in the Terminal that started it.
+External detection requires a readable matching working directory. A command started from another directory, containers, remote servers, and background programs without a listener may not be identified. External stdout/stderr, start time, Stop and Restart are unavailable. The configured port is preferred as the primary URL when present; otherwise the lowest detected port is used. The detail page exposes every detected listener URL and PID. Manage external processes in the terminal that started them.
 
 ## Git semantics and ordering
 
@@ -30,7 +30,7 @@ Git refreshes about every 30 seconds while the desktop polls state, or immediate
 
 When a managed app becomes Ready, or an external app is identified, capture its configured local web URL in a separate hidden sandboxed BrowserWindow. Wait briefly for rendering, save PNG plus JSON metadata, and notify React through a version value on the next state poll. No forms or app jobs are submitted. Captures are serialized and deduplicated per launch signature, with at most three attempts and a 30-second retry delay. An explicit Refresh preview remains available.
 
-Canonical path: `<git-root>/.ajo-space/previews/<app-id>.png` and `.json`. For non-Git projects use `<app-path>/.ajo-space/previews/`. A second image is cached in application data; reads prefer the repository image. Nested apps get separate IDs/files. Authentication in the user's browser is not shared with the capture session. Capture errors remain visible in app details. External process restarts at the same URL may require Refresh preview because external start times are not tracked.
+Canonical path: `<git-root>/.ajo-space/previews/<app-id>.png` and `.json`. For non-Git projects use `<app-path>/.ajo-space/previews/`. A second image is cached in application data; reads prefer the repository image. Nested apps get separate IDs/files. Authentication in the user's browser is not shared with the capture session. Capture errors remain visible in app details. A changed primary external listener PID triggers a new preview; use Refresh preview for content changes within the same process.
 
 ## Local data and deployment
 

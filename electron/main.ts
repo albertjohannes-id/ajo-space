@@ -224,7 +224,13 @@ function register() {
       case "open": {
         const a = selected();
         await shell.openExternal(
-          localURL(runner.states.get(a.id)?.url || a.url),
+          localURL(
+            runner.states
+              .get(a.id)
+              ?.instances?.find((i) => i.port === payload.port)?.url ||
+              runner.states.get(a.id)?.url ||
+              a.url,
+          ),
         );
         return true;
       }
